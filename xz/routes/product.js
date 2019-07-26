@@ -19,18 +19,16 @@ router.get('/list',function(req,res){
 		res.send(result);
 	});
 });
-/*
+
 //商品详情
 router.get('/detail',function(req,res){
-	//console.log(req.query.uid);
-	if (!req.query.uid)
+	if (!req.query.lid)
 	{
-		res.send('uid required');
+		res.send('lid required');
 		return;
 	}
-	pool.query('SELECT * FROM xz_user WHERE uid=?',[req.query.uid],function(err,result){
+	pool.query('SELECT * FROM xz_laptop WHERE lid=?',[req.query.lid],function(err,result){
 		if(err) throw err;
-		//console.log(result);
 		if(result.length===0){
 			res.send({code:301,msg:'can not found'});
 			return;
@@ -39,62 +37,36 @@ router.get('/detail',function(req,res){
 		}
 	});
 });
+
 //商品添加
-router.post('/reg',function(req,res){
+router.post('/add',function(req,res){
 	//验证数据是否为空
-	if (!req.body.uname)
-	{
-		res.send({code:401,msg:'uname required'});
-		return;
-	}
-	if (!req.body.upwd)
-	{
-		res.send({code:402,msg:'upwd required'});
-		return;
-	}
-	if (!req.body.email)
-	{
-		res.send({code:403,msg:'email required'});
-		return;
-	}
-	if(!req.body.phone)
-	{
-		res.send({code:404,msg:'phone required'});
-		return;
-	}
-	//执行SQL语句
-	pool.query('INSERT INTO xz_user SET ?',[req.body],function(err,result){
-		if(err) throw err;
-		if(result.affectedRows>0){
-			res.send({code:200,msg:'register suc'});
-		}
-	});
-});
-//修改商品
-router.get('/update',function(req,res){
-	//console.log(req.query);
-	var obj=req.query;
-	var i=400;
+	//console.log(req.body);
+	var obj=req.body;
+	var num=400;
 	for (var key in obj )
 	{
-		i++;
-		if (!obj[key])
-		{
-			res.send({code:302,msg:key+' required'});
+		num++;
+		if(!obj[key]){
+			res.send({code:num,msg:key+' required'});
 			return;
 		}
 	}
-	if (obj.gender=='男')
-	{
-		obj.gender=1;
-	}else if (obj.gender=='女')
-	{
-		obj.gender=0;
-	}
-	//res.send('修改成功');
-	pool.query('UPDATE xz_user SET ? WHERE uid=?',[obj,obj.uid],function(err,result){
+	//执行SQL语句
+	pool.query('INSERT INTO xz_laptop SET ?',[obj],function(err,result){
 		if(err) throw err;
-		//console.log(result);
+		if(result.affectedRows>0){
+			res.send({code:200,msg:'add suc'});
+		}
+	});
+});
+
+
+//修改商品
+router.post('/update',function(req,res){
+	var obj=req.body;
+	pool.query('UPDATE xz_laptop SET ? WHERE lid=?',[obj,obj.lid],function(err,result){
+		if(err) throw err;
 		if (result.affectedRows>0)
 		{
 			res.send({code:200,msg:'update suc'});
@@ -103,13 +75,15 @@ router.get('/update',function(req,res){
 		}
 	});
 });
+
 //删除商品
 router.get('/delete',function(req,res){
-	if(!req.query.uid){
-		res.send('uid required');
+	var obj=req.query;
+	if(!obj.lid){
+		res.send({code:401,msg:'lid required'});
 		return;
 	}
-	pool.query('DELETE FROM xz_user WHERE uid=?',[req.query.uid],function(err,result){
+	pool.query('DELETE FROM xz_laptop WHERE lid=?',[obj.lid],function(err,result){
 		if(err) throw err;
 		if (result.affectedRows>0)
 		{
@@ -119,12 +93,6 @@ router.get('/delete',function(req,res){
 		}
 	});
 });
-*/
-
-
-
-
-
 
 
 module.exports=router;
